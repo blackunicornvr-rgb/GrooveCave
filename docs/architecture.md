@@ -1,68 +1,33 @@
 # Arquitectura técnica propuesta
 
-## Estado de esta propuesta
+## MVP en Cloudflare
 
-Este documento describe una arquitectura inicial para validar GrooveCave, no servicios ya configurados. Conviene evitar compromisos de infraestructura hasta confirmar el flujo del producto, los derechos musicales y los requisitos de privacidad y costes.
-
-## Primera versión: landing y lista de interés
+La primera versión usa servicios de Cloudflare para mantener el despliegue sencillo:
 
 ```text
-Navegador
-   │
-   ▼
-Web estática / aplicación web en Cloudflare Pages
-   │ formulario validado en servidor
-   ▼
-Supabase (base de datos con acceso mínimo necesario)
+Navegador → Cloudflare Pages (HTML/CSS/JS)
+                    └─ Pages Function: POST /api/waitlist
+                         ├─ Turnstile (verificación anti-spam)
+                         └─ D1 (solicitudes de lista de espera)
 ```
 
-La primera entrega puede limitarse a contenido público y un formulario. No necesita microservicios, aplicación móvil ni una API independiente. Se debe minimizar la información personal recogida, validar entradas en servidor, proteger secretos en variables de entorno y definir cómo borrar los datos recibidos.
+La landing es estática; la función valida el formulario en servidor. No hay clave de base de datos expuesta al navegador ni endpoint público para leer solicitudes. La configuración paso a paso está en `web/README.md`.
 
-## Evolución del producto
+## Componentes
 
-### Web
+- **Pages:** publica los archivos de `web/` (raíz `web`, salida `.`).
+- **Pages Functions:** `web/functions/api/waitlist.js` procesa las altas.
+- **D1:** almacena únicamente nombre, email, rol, mensaje opcional, consentimiento y fecha.
+- **Turnstile:** protege el formulario; la secret key se almacena como secret del entorno Pages.
 
-Una aplicación web adaptable es suficiente para validar landing, perfiles y catálogo. Cloudflare Pages es una opción candidata si el framework elegido y sus funciones de servidor encajan con el despliegue. Mantener el sitio accesible, rápido y usable en móvil.
+## Seguridad y privacidad
 
-### Datos y autenticación
+- Aplicar validación de servidor, límites de longitud, consentimiento y honeypot.
+- Verificar Turnstile en servidor; mantener su secret fuera del código y del cliente.
+- No habilitar lecturas públicas de la tabla. Acceder a los registros desde el panel autenticado de Cloudflare.
+- Antes de aceptar datos reales, publicar un aviso de privacidad que indique responsable, finalidad, retención, derechos y contacto conforme a la jurisdicción aplicable.
+- Configurar reglas de rate limiting si se detecta abuso y borrar periódicamente solicitudes que ya no sean necesarias.
 
-Supabase/PostgreSQL puede gestionar perfiles, catálogo y autenticación. Diseñar políticas de acceso desde el inicio: permisos por rol, Row Level Security en tablas expuestas, privilegio mínimo y pruebas de acceso anónimo/usuario/artista/administrador. No confiar solo en ocultar controles en la interfaz.
+## Evolución
 
-Entidades posibles, a definir cuando se concrete el producto:
-
-- `profiles` y `artist_profiles`
-- `releases` y `tracks` (metadatos y estado de publicación)
-- `genres` o etiquetas editoriales
-- `events` y `venues`
-- `votes` (con restricciones contra duplicados y auditoría)
-- `consents` o registros de solicitudes, con retención limitada
-
-No crear tablas de pagos o suscripciones antes de elegir proveedor y definir obligaciones legales y contables.
-
-### Audio
-
-Cloudflare R2 es una opción candidata de almacenamiento, pero la entrega de audio requiere validar formatos, transcodificación, reproducción, ancho de banda real, caché, copias, protección contra enlaces compartidos y costes. Antes de aceptar archivos, definir quién tiene derechos y obtener autorización documentada para almacenar y distribuir cada grabación. No tratar R2 como un sistema de gestión de derechos ni asumir que el almacenamiento resuelve las obligaciones de streaming.
-
-Para el prototipo, considerar enlaces de reproducción autorizados o un catálogo editorial sin subir audio. Si se implementa carga, usar cargas controladas, límites de tamaño y tipo, cuarentena/revisión y acceso restringido a archivos no publicados.
-
-## Seguridad, privacidad y operación
-
-- Separar secretos del código; nunca exponer claves de servicio en el navegador.
-- Aplicar validación de servidor, límites de solicitudes y protección contra spam.
-- Limitar acceso de moderación y administración; registrar acciones relevantes.
-- Añadir políticas de privacidad, consentimiento, retención y eliminación antes de recoger datos personales.
-- No lanzar votaciones hasta diseñar reglas de elegibilidad, prevención de abuso, auditoría y mecanismo de impugnación.
-- Usar HTTPS, dependencias actualizadas, copias de seguridad y un procedimiento de respuesta a incidentes.
-- Configurar CI para lint, pruebas y compilación antes del despliegue público.
-
-## Decisiones pendientes
-
-1. Framework web y estrategia de renderizado.
-2. Si el primer catálogo usa enlaces o audio alojado.
-3. Jurisdicción, privacidad, derechos de autor y términos para artistas.
-4. Costes de almacenamiento, entrega y moderación a escala piloto.
-5. Definición editorial y proceso de apelación.
-
-## Recomendación
-
-Empieza con una landing y una lista de interés. Añade Supabase solo cuando sea necesario para guardar solicitudes de forma segura; prueba el catálogo con contenido autorizado antes de diseñar streaming. Mantén móvil, pagos y streaming completo fuera del primer alcance.
+Supabase u otros servicios pueden evaluarse en el futuro para autenticación, perfiles y catálogo, pero no hacen falta para validar esta landing. El almacenamiento y la distribución de audio requieren una revisión separada de derechos, costes, entrega y protección antes de habilitar cargas.

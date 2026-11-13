@@ -1,24 +1,52 @@
-# Landing de GrooveCave
+# Despliegue de GrooveCave en Cloudflare Pages
 
-La landing es una página estática pensada para desplegarse con Cloudflare Pages.
+La landing y el endpoint de lista de espera usan Cloudflare Pages Functions + D1 + Turnstile. Supabase ya no forma parte del flujo del formulario.
 
-## Archivos
+## 1. Crear la base D1
 
-- `index.html`: contenido de la página.
-- `styles.css`: estilos adaptables a móvil y escritorio.
-- `script.js`: comportamiento del formulario de demostración.
+En Cloudflare Dashboard: **Workers & Pages → D1 SQL Database → Create database**. Elige un nombre, por ejemplo `groovecave-waitlist`.
 
-## Probar localmente
+Abre la base en el panel SQL y ejecuta el contenido de `web/schema.sql`.
 
-Abre `index.html` en un navegador o sirve la carpeta con cualquier servidor estático local.
+## 2. Vincular D1 a Pages
 
-## Desplegar con Cloudflare Pages
+Abre tu proyecto de Pages → **Settings → Functions → D1 database bindings**. Añade un binding:
 
-Al conectar este repositorio en Cloudflare Pages, configura:
+- Variable name: `GROOVECAVE_DB`
+- D1 database: la base que acabas de crear
+
+Guarda y vuelve a desplegar el proyecto.
+
+## 3. Configurar Turnstile
+
+En **Cloudflare Dashboard → Turnstile**, crea un widget para el dominio de la web. Añade a las variables de entorno de Pages (Production y Preview):
+
+- `TURNSTILE_SITE_KEY`: la clave del sitio (variable pública)
+- `TURNSTILE_SECRET_KEY`: la clave secreta (configúrala como secret; no la añadas al repositorio)
+
+En `web/index.html`, sustituye `TU_TURNSTILE_SITE_KEY` por la site key. No publiques nunca la secret key.
+
+## 4. Ajustes de Pages
+
+Con el repositorio conectado:
 
 - Rama de producción: `main`
 - Directorio raíz: `web`
-- Comando de compilación: vacío (sitio HTML estático)
+- Comando de compilación: vacío
 - Directorio de salida: `.`
 
-El formulario es solamente visual y **no guarda ni envía datos**. No recopiles solicitudes reales hasta conectarlo a un servicio de backend y publicar la información de privacidad correspondiente.
+Pages detecta las funciones en `web/functions/` con esta raíz. La ruta del endpoint es `POST /api/waitlist`.
+
+## 5. Comprobar el despliegue
+
+Después del deploy, prueba el formulario con datos de prueba y revisa **D1 → Console** para confirmar que se añadió una fila. No se ofrece endpoint público de lectura; consulta las solicitudes desde el panel autenticado de D1.
+
+## Seguridad y privacidad
+
+- El navegador no recibe una clave de base de datos: las escrituras las realiza la Pages Function.
+- Turnstile se verifica en servidor y el campo trampa descarta bots simples.
+- Antes de recoger datos reales, publica un aviso de privacidad que identifique responsable, finalidad, retención, derechos y contacto, adecuado a tu jurisdicción.
+- No guardes información sensible en el campo libre. Define un plazo para borrar solicitudes antiguas.
+- Considera configurar reglas de rate limiting para `POST /api/waitlist` si recibes abuso.
+
+Si antes habías creado una tabla de prueba en Supabase, este flujo no la utiliza.
