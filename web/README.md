@@ -1,23 +1,24 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("waitlistForm");
-  const message = document.getElementById("formMessage");
+# Landing de GrooveCave
 
-  if (!form || !message) return;
+La landing es una página estática pensada para desplegarse con Cloudflare Pages.
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
+## Archivos
 
-    const formData = new FormData(form);
-    const name = (formData.get("name") || "").toString().trim();
-    const role = (formData.get("role") || "").toString().trim();
+- `index.html`: contenido de la página.
+- `styles.css`: estilos adaptables a móvil y escritorio.
+- `script.js`: comportamiento del formulario de demostración.
 
-    if (!name || !role) {
-      message.textContent = "Completa los campos obligatorios antes de continuar.";
-      return;
-    }
+## Probar localmente
 
-    message.textContent = "¡Gracias! Tu interés ha sido registrado. Te avisaremos pronto.";
-    form.reset();
-  });
-});
+Abre `index.html` en un navegador o sirve la carpeta con cualquier servidor estático local.
 
+## Desplegar con Cloudflare Pages
+
+Al conectar este repositorio en Cloudflare Pages, configura:
+
+- Rama de producción: `main`
+- Directorio raíz: `web`
+- Comando de compilación: vacío (sitio HTML estático)
+- Directorio de salida: `.`
+
+El formulario es solamente visual y **no guarda ni envía datos**. No recopiles solicitudes reales hasta conectarlo a un servicio de backend y publicar la información de privacidad correspondiente.
