@@ -61,10 +61,14 @@ El reproductor incluye búsqueda, favoritos locales, cola, aleatorio, repetició
 
 `web/contest.js` y `web/contest.css` implementan una demo local del concurso paralelo:
 
-- votación por estilos de canciones generadas o asistidas por IA;
+- valoración por estilos de canciones generadas o asistidas por IA con escala de **1 a 5** y opción de abstención (**no votar**);
 - una ganadora por estilo (se fija al cerrar la ronda);
 - draft exclusivo: cada ganadora por estilo solo puede asignarse a una banda;
 - superganadora global: esa sí puede marcarse para interpretación por todas las bandas;
 - paquetes de uso creativo visibles por canción (instrumental, stems, letra, guía vocal) para facilitar que artistas emergentes trabajen solo música o pistas parciales.
 
-El estado de votos/asignaciones se guarda en `localStorage` del navegador. No hay backend ni validación de identidad; es una simulación funcional para definir experiencia y reglas de producto antes de llevarlo a APIs persistentes.
+Incluye una **vista pública** y una **vista artista/jurado**. En modo público no se exponen las pistas de laboratorio; solo se muestran resultados y asignaciones. El estado de valoraciones/asignaciones se guarda en `localStorage` del navegador. No hay backend ni validación de identidad; es una simulación funcional para definir experiencia y reglas de producto antes de llevarlo a APIs persistentes.
+
+## Tema visual psicodélico suave
+
+`web/theme-psychedelic.css` añade una capa estética inspirada en funk/psicodelia 60s–70s (acentos cálidos, toques neón, instrumentos y texturas), sin saturar la lectura. Mantiene la estructura original de la landing y evita cambios agresivos de contraste.

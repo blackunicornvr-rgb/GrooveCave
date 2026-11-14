@@ -3,6 +3,9 @@
 .arena-meta{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding:14px 18px;border:1px solid #171b1f1d;border-radius:16px;background:#11151a08}
 .arena-meta p{margin:0;color:#2f3440}
 .arena-actions{display:flex;gap:10px;flex-wrap:wrap}
+.arena-role{display:grid;gap:6px;font-size:.82rem;color:#4b5160}
+.arena-role select{min-height:40px;padding:8px 10px;border:1px solid #171b1f2f;border-radius:10px;background:#fff}
+.arena-note{margin:12px 0 0;font-size:.86rem;color:#495161}
 
 .arena-styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:24px}
 .arena-style{padding:16px;border:1px solid #171b1f1e;border-radius:16px;background:#ffffffa8}
@@ -13,10 +16,14 @@
 .arena-style-card .meta{margin:4px 0 8px;color:#5b616b;font-size:.84rem}
 .arena-style-card .usage{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;padding:0;list-style:none}
 .arena-style-card .usage li{padding:3px 9px;border-radius:999px;background:#f1e2c2;color:#5f4a23;font-size:.74rem;font-weight:600}
-.arena-vote{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.arena-vote button{padding:8px 10px;border:1px solid #171b1f2a;border-radius:10px;background:#fff;cursor:pointer;font-weight:700}
-.arena-vote button:disabled{opacity:.55;cursor:not-allowed}
+.arena-vote{display:grid;gap:8px}
+.arena-rating{display:flex;gap:6px;flex-wrap:wrap}
+.arena-rating button{width:34px;height:34px;border:1px solid #171b1f2a;border-radius:50%;background:#fff;cursor:pointer;font-weight:700}
+.arena-rating button.is-active{background:#d9b26d;color:#17130d;border-color:#b58a43}
+.arena-vote .skip{padding:7px 10px;border:1px solid #171b1f2a;border-radius:999px;background:#fff;cursor:pointer;font-size:.76rem;font-weight:700;justify-self:start}
+.arena-rating button:disabled,.arena-vote .skip:disabled{opacity:.55;cursor:not-allowed}
 .arena-vote .votes{font-size:.83rem;color:#505762}
+.arena-locked{grid-column:1/-1;padding:18px;border:1px dashed #171b1f47;border-radius:14px;background:#fff;color:#434b5c}
 
 .arena-winners,.arena-draft,.arena-global{margin-top:24px;padding:18px;border:1px solid #171b1f1f;border-radius:16px;background:#ffffffbf}
 .arena-winners h3,.arena-draft h3,.arena-global h3{margin:0 0 10px}
