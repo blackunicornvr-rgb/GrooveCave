@@ -85,11 +85,11 @@ body{
     var(--cream);
 }
 
-#ai-arena{
+#arena-bandas{
   position:relative;
 }
 
-#ai-arena::before{
+#arena-bandas::before{
   content:"";
   position:absolute;
   inset:0;
@@ -99,7 +99,7 @@ body{
   pointer-events:none;
 }
 
-#ai-arena .container{
+#arena-bandas .container{
   position:relative;
 }
 

@@ -1,301 +1,184 @@
 (() => {
   const stylesRoot = document.getElementById("arenaStyles");
   const winnersRoot = document.getElementById("arenaWinnersList");
-  const draftRoot = document.getElementById("arenaDraftBoard");
+  const finalRoot = document.getElementById("arenaDraftBoard");
   const globalRoot = document.getElementById("arenaGlobalWinner");
-  const globalBandsRoot = document.getElementById("arenaGlobalBands");
+  const rankingRoot = document.getElementById("arenaGlobalBands");
   const closeRoundBtn = document.getElementById("arenaCloseRound");
   const resetBtn = document.getElementById("arenaReset");
-  const roleSelect = document.getElementById("arenaRole");
-  const visibilityNote = document.getElementById("arenaVisibilityNote");
-  if (!stylesRoot || !winnersRoot || !draftRoot || !globalRoot || !globalBandsRoot || !closeRoundBtn || !resetBtn || !roleSelect || !visibilityNote) return;
+  const note = document.getElementById("arenaVisibilityNote");
+  if (!stylesRoot || !winnersRoot || !finalRoot || !globalRoot || !rankingRoot || !closeRoundBtn || !resetBtn || !note) return;
 
-  const TRACKS = [
-    { id: "soul-1", style: "Soul", title: "Firelight", creator: "Nora Echo", usage: ["Instrumental", "Stems", "Letra"], seedVotes: 8, seedPoints: 33 },
-    { id: "soul-2", style: "Soul", title: "Night Bloom", creator: "Lio Wave", usage: ["Instrumental", "Stems", "Guía vocal"], seedVotes: 7, seedPoints: 27 },
-    { id: "funk-1", style: "Funk", title: "Chrome Steps", creator: "Mira Pulse", usage: ["Instrumental", "Stems"], seedVotes: 6, seedPoints: 22 },
-    { id: "funk-2", style: "Funk", title: "Pocket Reactor", creator: "Pax Bloom", usage: ["Instrumental", "Stems", "Letra"], seedVotes: 7, seedPoints: 30 },
-    { id: "afrobeat-1", style: "Afrobeat", title: "Urban Kora", creator: "Safi Loop", usage: ["Instrumental", "Stems", "Guía vocal"], seedVotes: 9, seedPoints: 36 },
-    { id: "afrobeat-2", style: "Afrobeat", title: "Sunline", creator: "Dama Flux", usage: ["Instrumental", "Stems"], seedVotes: 8, seedPoints: 30 }
+  const ENTRIES = [
+    { id: "soul-1", style: "Soul", band: "Nebula Cueva", song: "Firelight", format: ["Tema completo", "Instrumental"] },
+    { id: "soul-2", style: "Soul", band: "Siroco Azul", song: "Night Bloom", format: ["Tema completo", "Instrumental", "Sin voz"] },
+    { id: "funk-1", style: "Funk", band: "Cables Rojos", song: "Chrome Steps", format: ["Tema completo", "Instrumental"] },
+    { id: "funk-2", style: "Funk", band: "Prisma Sur", song: "Pocket Reactor", format: ["Tema completo", "Instrumental", "Sin voz"] },
+    { id: "afro-1", style: "Afrobeat", band: "La Cueva Brass", song: "Urban Kora", format: ["Tema completo", "Instrumental"] },
+    { id: "afro-2", style: "Afrobeat", band: "Nebula Cueva", song: "Sunline", format: ["Tema completo", "Sin voz"] }
   ];
-  const BANDS = ["Nebula Cueva", "Siroco Azul", "Cables Rojos", "Prisma Sur", "La Cueva Brass"];
-  const STORAGE_KEY = "gc-ai-arena";
+  const STORAGE_KEY = "gc-band-arena";
 
-  const groupedByStyle = TRACKS.reduce((acc, track) => {
-    if (!acc[track.style]) acc[track.style] = [];
-    acc[track.style].push(track);
+  const byStyle = ENTRIES.reduce((acc, entry) => {
+    if (!acc[entry.style]) acc[entry.style] = [];
+    acc[entry.style].push(entry);
     return acc;
   }, {});
 
-  const loadState = () => {
+  const load = () => {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      const ratings = parsed.ratings && typeof parsed.ratings === "object" ? parsed.ratings : {};
       return {
-        ratings,
-        roundClosed: Boolean(parsed.roundClosed),
-        assignments: parsed.assignments && typeof parsed.assignments === "object" ? parsed.assignments : {},
-        globalBands: Array.isArray(parsed.globalBands) ? parsed.globalBands : [],
-        role: parsed.role === "artist" ? "artist" : "listener"
+        ratings: parsed.ratings && typeof parsed.ratings === "object" ? parsed.ratings : {},
+        roundClosed: Boolean(parsed.roundClosed)
       };
     } catch {
-      return { ratings: {}, roundClosed: false, assignments: {}, globalBands: [], role: "listener" };
+      return { ratings: {}, roundClosed: false };
     }
   };
 
-  let state = loadState();
-  roleSelect.value = state.role;
+  let state = load();
 
-  const saveState = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const score = (entryId) => Number(state.ratings[entryId] || 0);
+
+  const avg = (entry) => {
+    const seedVotes = 6;
+    const seedPoints = 23;
+    const userVote = score(entry.id);
+    const votes = seedVotes + (userVote > 0 ? 1 : 0);
+    const points = seedPoints + userVote;
+    return { avg: points / votes, votes };
   };
 
-  const trackScore = (track) => {
-    const userRating = Number(state.ratings[track.id] || 0);
-    const totalVotes = track.seedVotes + (userRating > 0 ? 1 : 0);
-    const totalPoints = track.seedPoints + userRating;
-    return {
-      avg: totalVotes ? totalPoints / totalVotes : 0,
-      votes: totalVotes,
-      userRating
-    };
-  };
+  const styleWinner = (entries) => entries.slice().sort((a, b) => {
+    const aScore = avg(a);
+    const bScore = avg(b);
+    const diff = bScore.avg - aScore.avg;
+    if (Math.abs(diff) > 0.0001) return diff;
+    return bScore.votes - aScore.votes;
+  })[0];
 
-  const pickWinnerForStyle = (tracks) => tracks
-    .slice()
-    .sort((a, b) => {
-      const scoreA = trackScore(a);
-      const scoreB = trackScore(b);
-      const avgDiff = scoreB.avg - scoreA.avg;
-      if (Math.abs(avgDiff) > 0.0001) return avgDiff;
-      const voteDiff = scoreB.votes - scoreA.votes;
-      if (voteDiff) return voteDiff;
-      return a.id.localeCompare(b.id);
-    })[0];
-
-  const getStyleWinners = () => Object.entries(groupedByStyle).map(([style, tracks]) => {
-    const winner = pickWinnerForStyle(tracks);
-    return { style, winner, score: trackScore(winner) };
-  });
-
-  const getGlobalWinner = (styleWinners) => styleWinners
-    .slice()
-    .sort((a, b) => {
-      const diff = b.score.avg - a.score.avg;
-      if (Math.abs(diff) > 0.0001) return diff;
-      return b.score.votes - a.score.votes;
-    })[0];
-
-  const cleanAssignments = (styleWinners) => {
-    const winnerIds = new Set(styleWinners.map((item) => item.winner.id));
-    const usedBands = new Set();
-    Object.entries(state.assignments).forEach(([trackId, band]) => {
-      if (!winnerIds.has(trackId) || !BANDS.includes(band) || usedBands.has(band)) {
-        delete state.assignments[trackId];
-        return;
-      }
-      usedBands.add(band);
-    });
-  };
-
-  const renderStyles = () => {
+  const renderCards = () => {
     stylesRoot.innerHTML = "";
-    if (state.role !== "artist") {
-      stylesRoot.innerHTML = '<p class="arena-locked">La escucha y valoración de pistas de laboratorio está reservada a artistas/jurado. En modo público solo mostramos resultados y draft.</p>';
-      return;
-    }
-
-    Object.entries(groupedByStyle).forEach(([style, tracks]) => {
+    Object.entries(byStyle).forEach(([style, entries]) => {
       const block = document.createElement("article");
       block.className = "arena-style";
       block.innerHTML = `<h3>${style}</h3>`;
 
-      tracks.forEach((track) => {
+      entries.forEach((entry) => {
         const card = document.createElement("div");
         card.className = "arena-style-card";
-        const usage = track.usage.map((item) => `<li>${item}</li>`).join("");
-        const score = trackScore(track);
-        card.innerHTML = `<h4>${track.title}</h4><p class="meta">${track.creator}</p><ul class="usage">${usage}</ul>`;
+        const scoreInfo = avg(entry);
+        card.innerHTML = `<h4>${entry.song}</h4><p class="meta">${entry.band}</p><ul class="usage">${entry.format.map((x) => `<li>${x}</li>`).join("")}</ul>`;
 
         const vote = document.createElement("div");
         vote.className = "arena-vote";
+        const stars = document.createElement("div");
+        stars.className = "arena-rating";
 
-        const rating = document.createElement("div");
-        rating.className = "arena-rating";
         for (let value = 1; value <= 5; value++) {
-          const pointButton = document.createElement("button");
-          pointButton.type = "button";
-          pointButton.textContent = String(value);
-          pointButton.classList.toggle("is-active", score.userRating === value);
-          pointButton.disabled = state.roundClosed;
-          pointButton.setAttribute("aria-label", `Puntuar ${track.title} con ${value} puntos`);
-          pointButton.addEventListener("click", () => {
-            state.ratings[track.id] = value;
-            saveState();
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = String(value);
+          btn.classList.toggle("is-active", score(entry.id) === value);
+          btn.disabled = state.roundClosed;
+          btn.addEventListener("click", () => {
+            state.ratings[entry.id] = value;
+            save();
             renderAll();
           });
-          rating.append(pointButton);
+          stars.append(btn);
         }
 
-        const skip = document.createElement("button");
-        skip.type = "button";
-        skip.className = "skip";
-        skip.textContent = "No votar";
-        skip.disabled = state.roundClosed;
-        skip.addEventListener("click", () => {
-          delete state.ratings[track.id];
-          saveState();
+        const abstain = document.createElement("button");
+        abstain.type = "button";
+        abstain.className = "skip";
+        abstain.textContent = "No votar";
+        abstain.disabled = state.roundClosed;
+        abstain.addEventListener("click", () => {
+          delete state.ratings[entry.id];
+          save();
           renderAll();
         });
 
-        const scoreText = document.createElement("span");
-        scoreText.className = "votes";
-        scoreText.textContent = `${score.avg.toFixed(2)} / 5 · ${score.votes} valoraciones`;
+        const points = document.createElement("span");
+        points.className = "votes";
+        points.textContent = `${scoreInfo.avg.toFixed(2)} / 5 · ${scoreInfo.votes} valoraciones`;
 
-        vote.append(rating, skip, scoreText);
+        vote.append(stars, abstain, points);
         card.append(vote);
         block.append(card);
       });
+
       stylesRoot.append(block);
     });
   };
 
-  const renderWinners = (styleWinners) => {
+  const renderWinners = (winners) => {
     winnersRoot.innerHTML = "";
-    styleWinners.forEach(({ style, winner, score }) => {
+    winners.forEach(({ style, winner }) => {
+      const winnerScore = avg(winner);
       const row = document.createElement("div");
       row.className = "winner-row";
-      if (state.role === "artist") {
-        row.innerHTML = `<div><strong>${style}: ${winner.title}</strong><span>${winner.creator}</span></div><span>${score.avg.toFixed(2)} / 5 · ${score.votes} valoraciones · ${winner.usage.join(" · ")}</span>`;
-      } else {
-        row.innerHTML = `<div><strong>${style}: ${winner.title}</strong><span>Tema seleccionado para directo</span></div><span>${score.avg.toFixed(2)} / 5 · ${score.votes} valoraciones</span>`;
-      }
+      row.innerHTML = `<div><strong>${style}: ${winner.band}</strong><span>${winner.song}</span></div><span>${winnerScore.avg.toFixed(2)} / 5 · ${winnerScore.votes} valoraciones</span>`;
       winnersRoot.append(row);
     });
   };
 
-  const renderDraft = (styleWinners) => {
-    draftRoot.innerHTML = "";
+  const renderFinal = (winners) => {
+    finalRoot.innerHTML = "";
     if (!state.roundClosed) {
-      draftRoot.innerHTML = "<p>Cierra la ronda para activar el draft exclusivo por banda.</p>";
+      finalRoot.innerHTML = "<p>Cierra la ronda para confirmar qué banda pasa a la final por cada estilo.</p>";
       return;
     }
-
-    const assignedBands = new Set(Object.values(state.assignments));
-    styleWinners.forEach(({ style, winner }) => {
+    winners.forEach(({ style, winner }) => {
       const row = document.createElement("div");
       row.className = "draft-row";
-      const assigned = state.assignments[winner.id];
-      const controls = document.createElement("div");
-      controls.className = "controls";
-
-      if (!assigned) {
-        const select = document.createElement("select");
-        select.disabled = state.role !== "artist";
-        select.innerHTML = `<option value="">Elegir banda</option>${BANDS.map((band) => {
-          const unavailable = assignedBands.has(band) ? "disabled" : "";
-          return `<option value="${band}" ${unavailable}>${band}</option>`;
-        }).join("")}`;
-        const assignBtn = document.createElement("button");
-        assignBtn.type = "button";
-        assignBtn.textContent = "Asignar";
-        assignBtn.disabled = state.role !== "artist";
-        assignBtn.addEventListener("click", () => {
-          if (!select.value) return;
-          state.assignments[winner.id] = select.value;
-          saveState();
-          renderAll();
-        });
-        controls.append(select, assignBtn);
-      } else {
-        const assignedText = document.createElement("span");
-        assignedText.className = "assigned";
-        assignedText.textContent = `Asignada a: ${assigned}`;
-        controls.append(assignedText);
-        if (state.role === "artist") {
-          const releaseBtn = document.createElement("button");
-          releaseBtn.type = "button";
-          releaseBtn.textContent = "Liberar";
-          releaseBtn.addEventListener("click", () => {
-            delete state.assignments[winner.id];
-            saveState();
-            renderAll();
-          });
-          controls.append(releaseBtn);
-        }
-      }
-
-      row.innerHTML = `<strong>${style}: ${winner.title}</strong>`;
-      row.append(controls);
-      draftRoot.append(row);
+      row.innerHTML = `<strong>${style}</strong><span class="assigned">${winner.band} · ${winner.song}</span>`;
+      finalRoot.append(row);
     });
   };
 
-  const renderGlobal = (globalWinner) => {
-    if (!globalWinner) {
-      globalRoot.textContent = "Aún no hay superganadora global.";
-      globalBandsRoot.innerHTML = "";
-      return;
-    }
-    if (state.role === "artist") {
-      globalRoot.textContent = `${globalWinner.winner.title} (${globalWinner.style}) de ${globalWinner.winner.creator}. Esta pista puede interpretarla cualquier banda.`;
-    } else {
-      globalRoot.textContent = `${globalWinner.winner.title} (${globalWinner.style}). Esta pista puede interpretarla cualquier banda.`;
-    }
+  const renderGlobal = (winners) => {
+    const ordered = winners
+      .map(({ style, winner }) => ({ style, winner, score: avg(winner) }))
+      .sort((a, b) => b.score.avg - a.score.avg);
+    const champion = ordered[0];
 
-    globalBandsRoot.innerHTML = "";
-    BANDS.forEach((band) => {
-      const row = document.createElement("label");
+    globalRoot.textContent = state.roundClosed
+      ? `${champion.winner.band} gana la ronda con ${champion.winner.song} (${champion.style}).`
+      : "Se mostrará al cerrar la ronda de votación.";
+
+    rankingRoot.innerHTML = "";
+    ordered.forEach((entry, i) => {
+      const row = document.createElement("div");
       row.className = "global-band";
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.checked = state.globalBands.includes(band);
-      checkbox.disabled = !state.roundClosed || state.role !== "artist";
-      checkbox.addEventListener("change", () => {
-        if (checkbox.checked) {
-          state.globalBands = [...new Set([...state.globalBands, band])];
-        } else {
-          state.globalBands = state.globalBands.filter((name) => name !== band);
-        }
-        saveState();
-      });
-      row.append(checkbox, document.createTextNode(band));
-      globalBandsRoot.append(row);
+      row.innerHTML = `<strong>#${i + 1} ${entry.winner.band}</strong><span>${entry.score.avg.toFixed(2)} / 5</span>`;
+      rankingRoot.append(row);
     });
   };
 
   const renderAll = () => {
-    const styleWinners = getStyleWinners();
-    cleanAssignments(styleWinners);
-    const globalWinner = getGlobalWinner(styleWinners);
-    renderStyles();
-    renderWinners(styleWinners);
-    renderDraft(styleWinners);
-    renderGlobal(globalWinner);
-
+    const winners = Object.entries(byStyle).map(([style, entries]) => ({ style, winner: styleWinner(entries) }));
+    renderCards();
+    renderWinners(winners);
+    renderFinal(winners);
+    renderGlobal(winners);
     closeRoundBtn.textContent = state.roundClosed ? "Ronda cerrada" : "Cerrar ronda y fijar ganadoras";
-    closeRoundBtn.disabled = state.roundClosed || state.role !== "artist";
-    resetBtn.disabled = state.role !== "artist";
-    visibilityNote.textContent = state.role === "artist"
-      ? "Modo artista/jurado activo: puedes escuchar pistas de laboratorio y puntuar de 1 a 5 o abstenerte."
-      : "Modo público activo: las pistas de laboratorio no se muestran al público. Solo se ven resultados y asignaciones.";
+    closeRoundBtn.disabled = state.roundClosed;
+    note.textContent = "Competición 100% orgánica entre bandas: puntúa de 1 a 5 o abstente. Sin IA en composición ni selección.";
   };
 
   closeRoundBtn.addEventListener("click", () => {
     state.roundClosed = true;
-    saveState();
+    save();
     renderAll();
   });
 
   resetBtn.addEventListener("click", () => {
-    state = { ratings: {}, roundClosed: false, assignments: {}, globalBands: [], role: state.role };
-    saveState();
-    renderAll();
-  });
-
-  roleSelect.addEventListener("change", () => {
-    state.role = roleSelect.value === "artist" ? "artist" : "listener";
-    saveState();
+    state = { ratings: {}, roundClosed: false };
+    save();
     renderAll();
   });
 

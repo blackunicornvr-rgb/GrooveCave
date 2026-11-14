@@ -57,17 +57,16 @@ El catálogo del reproductor vive en `web/player.js`. Las pistas actuales son to
 
 El reproductor incluye búsqueda, favoritos locales, cola, aleatorio, repetición (desactivada/cola/pista), volumen y silencio, recuperación de la posición, controles multimedia compatibles, atajos de teclado y una vista ampliada accesible. Las preferencias se guardan solo en el almacenamiento local del navegador. Los atajos globales no interfieren con campos de formulario ni controles enfocables.
 
-## IA Arena (demo en frontend)
+## Arena de Bandas (demo en frontend)
 
 `web/contest.js` y `web/contest.css` implementan una demo local del concurso paralelo:
 
-- valoración por estilos de canciones generadas o asistidas por IA con escala de **1 a 5** y opción de abstención (**no votar**);
-- una ganadora por estilo (se fija al cerrar la ronda);
-- draft exclusivo: cada ganadora por estilo solo puede asignarse a una banda;
-- superganadora global: esa sí puede marcarse para interpretación por todas las bandas;
-- paquetes de uso creativo visibles por canción (instrumental, stems, letra, guía vocal) para facilitar que artistas emergentes trabajen solo música o pistas parciales.
+- valoración por estilos con escala de **1 a 5** y opción de abstención (**no votar**);
+- una banda ganadora por estilo (se fija al cerrar la ronda);
+- final entre ganadoras por estilo y ranking global de la ronda;
+- formatos de performance por entrada (tema completo, instrumental y sin voz) para facilitar trabajo en directo y de artistas emergentes.
 
-Incluye una **vista pública** y una **vista artista/jurado**. En modo público no se exponen las pistas de laboratorio; solo se muestran resultados y asignaciones. El estado de valoraciones/asignaciones se guarda en `localStorage` del navegador. No hay backend ni validación de identidad; es una simulación funcional para definir experiencia y reglas de producto antes de llevarlo a APIs persistentes.
+El estado de valoraciones se guarda en `localStorage` del navegador. No hay backend ni validación de identidad; es una simulación funcional para definir experiencia y reglas de producto antes de llevarlo a APIs persistentes.
 
 ## Tema visual psicodélico suave
 
