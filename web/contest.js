@@ -7,7 +7,10 @@
   const closeRoundBtn = document.getElementById("arenaCloseRound");
   const resetBtn = document.getElementById("arenaReset");
   const note = document.getElementById("arenaVisibilityNote");
-  if (!stylesRoot || !winnersRoot || !finalRoot || !globalRoot || !rankingRoot || !closeRoundBtn || !resetBtn || !note) return;
+  const bandSelect = document.getElementById("arenaBandSelect");
+  const enrollBtn = document.getElementById("arenaEnrollBtn");
+  const enrollmentList = document.getElementById("arenaEnrollmentList");
+  if (!stylesRoot || !winnersRoot || !finalRoot || !globalRoot || !rankingRoot || !closeRoundBtn || !resetBtn || !note || !bandSelect || !enrollBtn || !enrollmentList) return;
 
   const ENTRIES = [
     { id: "soul-1", style: "Soul", band: "Nebula Cueva", song: "Firelight", format: ["Tema completo", "Instrumental"] },
@@ -18,22 +21,19 @@
     { id: "afro-2", style: "Afrobeat", band: "Nebula Cueva", song: "Sunline", format: ["Tema completo", "Sin voz"] }
   ];
   const STORAGE_KEY = "gc-band-arena";
-
-  const byStyle = ENTRIES.reduce((acc, entry) => {
-    if (!acc[entry.style]) acc[entry.style] = [];
-    acc[entry.style].push(entry);
-    return acc;
-  }, {});
+  const STYLES = [...new Set(ENTRIES.map((entry) => entry.style))];
+  const BANDS = [...new Set(ENTRIES.map((entry) => entry.band))].sort();
 
   const load = () => {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
       return {
         ratings: parsed.ratings && typeof parsed.ratings === "object" ? parsed.ratings : {},
-        roundClosed: Boolean(parsed.roundClosed)
+        roundClosed: Boolean(parsed.roundClosed),
+        enrolledBands: Array.isArray(parsed.enrolledBands) ? parsed.enrolledBands.filter((band) => BANDS.includes(band)) : []
       };
     } catch {
-      return { ratings: {}, roundClosed: false };
+      return { ratings: {}, roundClosed: false, enrolledBands: [] };
     }
   };
 
@@ -41,6 +41,20 @@
 
   const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   const score = (entryId) => Number(state.ratings[entryId] || 0);
+  const isEnrolled = (band) => state.enrolledBands.includes(band);
+
+  const activeEntries = () => ENTRIES.filter((entry) => isEnrolled(entry.band));
+  const entriesByStyle = () => STYLES.reduce((acc, style) => {
+    acc[style] = activeEntries().filter((entry) => entry.style === style);
+    return acc;
+  }, {});
+
+  const pruneRatings = () => {
+    const validIds = new Set(activeEntries().map((entry) => entry.id));
+    Object.keys(state.ratings).forEach((entryId) => {
+      if (!validIds.has(entryId)) delete state.ratings[entryId];
+    });
+  };
 
   const avg = (entry) => {
     const seedVotes = 6;
@@ -59,12 +73,54 @@
     return bScore.votes - aScore.votes;
   })[0];
 
-  const renderCards = () => {
+  const renderEnrollment = () => {
+    const availableBands = BANDS.filter((band) => !isEnrolled(band));
+    bandSelect.innerHTML = `<option value="">Seleccionar banda</option>${availableBands.map((band) => `<option value="${band}">${band}</option>`).join("")}`;
+    bandSelect.disabled = state.roundClosed || availableBands.length === 0;
+    enrollBtn.disabled = state.roundClosed || availableBands.length === 0;
+
+    enrollmentList.innerHTML = "";
+    if (!state.enrolledBands.length) {
+      enrollmentList.innerHTML = '<p class="arena-empty">Aún no hay bandas inscritas. Solo participan bandas apuntadas.</p>';
+      return;
+    }
+
+    state.enrolledBands.forEach((band) => {
+      const chip = document.createElement("div");
+      chip.className = "enrolled-band";
+      chip.innerHTML = `<span>${band}</span>`;
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "×";
+      remove.disabled = state.roundClosed;
+      remove.setAttribute("aria-label", `Quitar ${band} de la competición`);
+      remove.addEventListener("click", () => {
+        state.enrolledBands = state.enrolledBands.filter((name) => name !== band);
+        pruneRatings();
+        save();
+        renderAll();
+      });
+      chip.append(remove);
+      enrollmentList.append(chip);
+    });
+  };
+
+  const renderCards = (grouped) => {
     stylesRoot.innerHTML = "";
-    Object.entries(byStyle).forEach(([style, entries]) => {
+    STYLES.forEach((style) => {
+      const entries = grouped[style];
       const block = document.createElement("article");
       block.className = "arena-style";
       block.innerHTML = `<h3>${style}</h3>`;
+
+      if (!entries.length) {
+        const empty = document.createElement("p");
+        empty.className = "arena-empty";
+        empty.textContent = "Sin bandas inscritas en este estilo.";
+        block.append(empty);
+        stylesRoot.append(block);
+        return;
+      }
 
       entries.forEach((entry) => {
         const card = document.createElement("div");
@@ -117,6 +173,10 @@
 
   const renderWinners = (winners) => {
     winnersRoot.innerHTML = "";
+    if (!winners.length) {
+      winnersRoot.innerHTML = '<p class="arena-empty">No hay ganadoras porque no hay bandas inscritas.</p>';
+      return;
+    }
     winners.forEach(({ style, winner }) => {
       const winnerScore = avg(winner);
       const row = document.createElement("div");
@@ -132,6 +192,10 @@
       finalRoot.innerHTML = "<p>Cierra la ronda para confirmar qué banda pasa a la final por cada estilo.</p>";
       return;
     }
+    if (!winners.length) {
+      finalRoot.innerHTML = "<p>Sin bandas inscritas no hay final de ronda.</p>";
+      return;
+    }
     winners.forEach(({ style, winner }) => {
       const row = document.createElement("div");
       row.className = "draft-row";
@@ -141,6 +205,11 @@
   };
 
   const renderGlobal = (winners) => {
+    rankingRoot.innerHTML = "";
+    if (!winners.length) {
+      globalRoot.textContent = "Inscribe bandas para generar ranking y ganadora global.";
+      return;
+    }
     const ordered = winners
       .map(({ style, winner }) => ({ style, winner, score: avg(winner) }))
       .sort((a, b) => b.score.avg - a.score.avg);
@@ -150,7 +219,6 @@
       ? `${champion.winner.band} gana la ronda con ${champion.winner.song} (${champion.style}).`
       : "Se mostrará al cerrar la ronda de votación.";
 
-    rankingRoot.innerHTML = "";
     ordered.forEach((entry, i) => {
       const row = document.createElement("div");
       row.className = "global-band";
@@ -160,15 +228,30 @@
   };
 
   const renderAll = () => {
-    const winners = Object.entries(byStyle).map(([style, entries]) => ({ style, winner: styleWinner(entries) }));
-    renderCards();
+    const grouped = entriesByStyle();
+    const winners = STYLES
+      .map((style) => ({ style, winner: grouped[style].length ? styleWinner(grouped[style]) : null }))
+      .filter((item) => item.winner);
+
+    renderEnrollment();
+    renderCards(grouped);
     renderWinners(winners);
     renderFinal(winners);
     renderGlobal(winners);
+
     closeRoundBtn.textContent = state.roundClosed ? "Ronda cerrada" : "Cerrar ronda y fijar ganadoras";
-    closeRoundBtn.disabled = state.roundClosed;
-    note.textContent = "Competición 100% orgánica entre bandas: puntúa de 1 a 5 o abstente. Sin IA en composición ni selección.";
+    closeRoundBtn.disabled = state.roundClosed || winners.length === 0;
+    note.textContent = "Competición 100% orgánica entre bandas: puntúa de 1 a 5 o abstente. Solo participan bandas inscritas.";
   };
+
+  enrollBtn.addEventListener("click", () => {
+    if (!bandSelect.value || state.roundClosed) return;
+    if (!isEnrolled(bandSelect.value)) {
+      state.enrolledBands = [...state.enrolledBands, bandSelect.value];
+      save();
+      renderAll();
+    }
+  });
 
   closeRoundBtn.addEventListener("click", () => {
     state.roundClosed = true;
@@ -177,7 +260,7 @@
   });
 
   resetBtn.addEventListener("click", () => {
-    state = { ratings: {}, roundClosed: false };
+    state = { ratings: {}, roundClosed: false, enrolledBands: [] };
     save();
     renderAll();
   });

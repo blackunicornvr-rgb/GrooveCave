@@ -62,6 +62,7 @@ El reproductor incluye búsqueda, favoritos locales, cola, aleatorio, repetició
 `web/contest.js` y `web/contest.css` implementan una demo local del concurso paralelo:
 
 - valoración por estilos con escala de **1 a 5** y opción de abstención (**no votar**);
+- participación restringida a **bandas inscritas** en la ronda;
 - una banda ganadora por estilo (se fija al cerrar la ronda);
 - final entre ganadoras por estilo y ranking global de la ronda;
 - formatos de performance por entrada (tema completo, instrumental y sin voz) para facilitar trabajo en directo y de artistas emergentes.
