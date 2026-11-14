@@ -56,3 +56,15 @@ Si antes habías creado una tabla de prueba en Supabase, este flujo no la utiliz
 El catálogo del reproductor vive en `web/player.js`. Las pistas actuales son tonos sintetizados localmente para probar controles e interacción; no son música publicada ni contenido de artistas. Para usar audio autorizado, añade a cada pista una URL `src` y sus metadatos editoriales y sustituye los datos de ejemplo. Antes de abrir un catálogo real, implementa almacenamiento/CDN, derechos de acceso, derechos musicales y telemetría de escucha en el backend; no expongas enlaces privados o credenciales en el navegador.
 
 El reproductor incluye búsqueda, favoritos locales, cola, aleatorio, repetición (desactivada/cola/pista), volumen y silencio, recuperación de la posición, controles multimedia compatibles, atajos de teclado y una vista ampliada accesible. Las preferencias se guardan solo en el almacenamiento local del navegador. Los atajos globales no interfieren con campos de formulario ni controles enfocables.
+
+## IA Arena (demo en frontend)
+
+`web/contest.js` y `web/contest.css` implementan una demo local del concurso paralelo:
+
+- votación por estilos de canciones generadas o asistidas por IA;
+- una ganadora por estilo (se fija al cerrar la ronda);
+- draft exclusivo: cada ganadora por estilo solo puede asignarse a una banda;
+- superganadora global: esa sí puede marcarse para interpretación por todas las bandas;
+- paquetes de uso creativo visibles por canción (instrumental, stems, letra, guía vocal) para facilitar que artistas emergentes trabajen solo música o pistas parciales.
+
+El estado de votos/asignaciones se guarda en `localStorage` del navegador. No hay backend ni validación de identidad; es una simulación funcional para definir experiencia y reglas de producto antes de llevarlo a APIs persistentes.
