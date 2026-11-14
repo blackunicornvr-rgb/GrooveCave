@@ -50,3 +50,9 @@ Después del deploy, prueba el formulario con datos de prueba y revisa **D1 → 
 - Considera configurar reglas de rate limiting para `POST /api/waitlist` si recibes abuso.
 
 Si antes habías creado una tabla de prueba en Supabase, este flujo no la utiliza.
+
+## Reproductor de demostración
+
+El catálogo del reproductor vive en `web/player.js`. Las pistas actuales son tonos sintetizados localmente para probar controles e interacción; no son música publicada ni contenido de artistas. Para usar audio autorizado, añade a cada pista una URL `src` y sus metadatos editoriales y sustituye los datos de ejemplo. Antes de abrir un catálogo real, implementa almacenamiento/CDN, derechos de acceso, derechos musicales y telemetría de escucha en el backend; no expongas enlaces privados o credenciales en el navegador.
+
+El reproductor incluye búsqueda, favoritos locales, cola, aleatorio, repetición (desactivada/cola/pista), volumen y silencio, recuperación de la posición, controles multimedia compatibles, atajos de teclado y una vista ampliada accesible. Las preferencias se guardan solo en el almacenamiento local del navegador. Los atajos globales no interfieren con campos de formulario ni controles enfocables.
