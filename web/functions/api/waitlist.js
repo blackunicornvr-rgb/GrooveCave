@@ -1,3 +1,24 @@
+// Rate limiting: máximo 5 peticiones por minuto por IP en este endpoint.
+async function checkRateLimit(env, ip) {
+  // Limpiar registros antiguos para mantener la tabla pequeña.
+  await env.GROOVECAVE_DB.prepare(
+    "DELETE FROM rate_limits WHERE created_at < datetime('now', '-1 minute')"
+  ).run();
+
+  // Contar peticiones recientes de esta IP contra /api/waitlist.
+  const count = await env.GROOVECAVE_DB.prepare(
+    "SELECT COUNT(*) AS total FROM rate_limits WHERE ip = ? AND endpoint = 'waitlist' AND created_at >= datetime('now', '-1 minute')"
+  ).bind(ip).first();
+
+  if (Number(count?.total || 0) >= 5) return false;
+
+  await env.GROOVECAVE_DB.prepare(
+    "INSERT INTO rate_limits (ip, endpoint, created_at) VALUES (?, 'waitlist', datetime('now'))"
+  ).bind(ip).run();
+
+  return true;
+}
+
 export async function onRequestPost({ request, env }) {
   const json = (body, status = 200) => new Response(JSON.stringify(body), {
     status,
@@ -9,6 +30,15 @@ export async function onRequestPost({ request, env }) {
   });
 
   if (!env.GROOVECAVE_DB) return json({ error: "El formulario no está configurado todavía." }, 503);
+
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  try {
+    const allowed = await checkRateLimit(env, ip);
+    if (!allowed) return json({ error: "Demasiadas peticiones. Intenta de nuevo en un minuto." }, 429);
+  } catch (error) {
+    console.error("waitlist rate limit failed", error);
+    return json({ error: "No se pudo validar el límite de solicitudes. Inténtalo de nuevo." }, 503);
+  }
 
   const contentType = request.headers.get("content-type") || "";
   if (!contentType.includes("application/json")) return json({ error: "Solicitud no válida." }, 415);

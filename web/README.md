@@ -6,7 +6,7 @@ La landing y el endpoint de lista de espera usan Cloudflare Pages Functions + D1
 
 En Cloudflare Dashboard: **Workers & Pages → D1 SQL Database → Create database**. Elige un nombre, por ejemplo `groovecave-waitlist`.
 
-Abre la base en el panel SQL y ejecuta el contenido de `web/schema.sql`.
+Abre la base en el panel SQL y ejecuta el contenido de `db/schema.sql`.
 
 ## 2. Vincular D1 a Pages
 

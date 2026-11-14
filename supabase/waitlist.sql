@@ -1,2 +1,2 @@
 -- DEPRECATED: this was an early Supabase prototype and is not used by the Cloudflare MVP.
--- The active schema is web/schema.sql (Cloudflare D1). Do not run this file for the current deployment.
+-- The active schema is db/schema.sql (Cloudflare D1). Do not run this file for the current deployment.
