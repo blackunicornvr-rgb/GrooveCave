@@ -72,3 +72,5 @@ El estado de valoraciones se guarda en `localStorage` del navegador. No hay back
 ## Tema visual psicodélico suave
 
 `web/theme-psychedelic.css` añade una capa estética inspirada en funk/psicodelia 60s–70s (acentos cálidos, toques neón, instrumentos y texturas), sin saturar la lectura. Mantiene la estructura original de la landing y evita cambios agresivos de contraste.
+
+Los fondos difuminados usan ilustraciones SVG originales en `web/assets/`, sin dependencias externas. Se aplican con baja opacidad en el hero, catálogo, comunidad, arena y formulario para mantener el texto legible.

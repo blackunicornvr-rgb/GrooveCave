@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 720" fill="none">
+  <defs>
+    <linearGradient id="vinyl" x1="120" y1="90" x2="470" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF8F1F"/>
+      <stop offset=".52" stop-color="#FF4F9C"/>
+      <stop offset="1" stop-color="#00C9C8"/>
+    </linearGradient>
+    <linearGradient id="guitar" x1="440" y1="190" x2="780" y2="680" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD166"/>
+      <stop offset=".55" stop-color="#FF8F1F"/>
+      <stop offset="1" stop-color="#FF4F9C"/>
+    </linearGradient>
+  </defs>
+  <circle cx="280" cy="250" r="205" fill="#12151A" stroke="url(#vinyl)" stroke-width="26"/>
+  <circle cx="280" cy="250" r="166" stroke="#FFD166" stroke-opacity=".62" stroke-width="4"/>
+  <circle cx="280" cy="250" r="128" stroke="#FF4F9C" stroke-opacity=".7" stroke-width="4"/>
+  <circle cx="280" cy="250" r="88" stroke="#00C9C8" stroke-opacity=".72" stroke-width="4"/>
+  <circle cx="280" cy="250" r="24" fill="#FFD166"/>
+  <path d="M653 115c-24 0-44 20-44 44v142c-53-20-111 11-118 68-7 54 41 96 94 82 40-11 60-47 60-87V231l115-26v129c-53-20-111 11-118 68-7 54 41 96 94 82 40-11 60-47 60-87V80L653 115Z" fill="url(#guitar)"/>
+  <path d="M505 185 749 129M505 199l244-56M506 213l243-56M506 227l243-56" stroke="#221611" stroke-opacity=".65" stroke-width="5"/>
+  <path d="m105 524 28-24 18 32 28-24 17 31 30-24M835 483l21-18 17 25 22-18 17 25 23-19" stroke="#00C9C8" stroke-linecap="round" stroke-linejoin="round" stroke-width="12"/>
+  <path d="m155 85 12-27 12 27 27 12-27 12-12 27-12-27-27-12 27-12ZM830 296l10-22 10 22 22 10-22 10-10 22-10-22-22-10 22-10Z" fill="#FFD166"/>
+</svg>
