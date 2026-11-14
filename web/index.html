@@ -9,13 +9,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="player.css" />
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   </head>
   <body>
     <header class="topbar">
       <div class="container nav">
         <a class="brand" href="#inicio" aria-label="GrooveCave, inicio"><span class="brand-mark">🦇</span><span>GrooveCave</span></a>
-        <nav class="menu" aria-label="Navegación principal"><a href="#porque">Por qué</a><a href="#sonido">Sonido</a><a href="#comunidad">Comunidad</a><a href="#espera">Lista de espera</a></nav>
+        <nav class="menu" aria-label="Navegación principal"><a href="#porque">Por qué</a><a href="#sonido">Sonido</a><a href="#catalogo">Escucha</a><a href="#comunidad">Comunidad</a><a href="#espera">Lista de espera</a></nav>
         <a class="button button-small button-dark" href="#espera">Únete</a>
       </div>
     </header>
@@ -24,6 +25,7 @@
         <div class="hero-copy"><p class="eyebrow">Música con raíz. Comunidad con alma.</p><h1>El refugio de la música independiente y orgánica.</h1><p class="lead">GrooveCave conecta artistas reales con oyentes que buscan algo más que ruido algorítmico: curación humana, identidad sonora y experiencias en vivo con sentido.</p><div class="cta-row"><a class="button button-primary" href="#espera">Quiero participar</a><a class="button button-secondary" href="#porque">Descubre la idea</a></div><ul class="mini-stats"><li><strong>Curación</strong><span>humana</span></li><li><strong>Talento</strong><span>independiente</span></li><li><strong>Eventos</strong><span>en vivo</span></li></ul></div>
         <div class="hero-card" aria-label="Vista previa conceptual de la plataforma"><div class="player-window"><div class="window-bar"><span></span><span></span><span></span></div><div class="track-card"><div class="cover-art" aria-hidden="true">♫</div><div class="track-meta"><p class="label">Concepto de la plataforma</p><h3>La Cueva del Mes</h3><p>Selección curada por la comunidad</p></div></div><div class="progress"><div class="progress-bar"></div></div><div class="controls" aria-hidden="true"><button type="button" tabindex="-1">⏮</button><button type="button" class="play" tabindex="-1">▶</button><button type="button" tabindex="-1">⏭</button></div></div></div>
       </div></section>
+      <section id="catalogo" class="section"><div class="container"><div class="section-heading narrow"><p class="eyebrow">Reproductor</p><h2>Escucha cómo sonará GrooveCave.</h2></div><div class="catalog-grid" id="catalogGrid"></div><p class="demo-note">Pistas de demostración generadas en el navegador. El catálogo real llegará con artistas autorizados.</p></div></section>
       <section id="porque" class="section section-light"><div class="container"><div class="section-heading"><p class="eyebrow eyebrow-dark">¿Por qué GrooveCave?</p><h2>Una alternativa a la música hecha para el consumo acelerado.</h2></div><div class="feature-grid"><article class="feature-card"><div class="feature-icon">🎵</div><h3>Identidad real</h3><p>Un espacio para soul, funk, afrobeat, jazz, rock, indie, folk, flamenco y fusiones con raíces, con criterios editoriales claros.</p></article><article class="feature-card"><div class="feature-icon">🧭</div><h3>Curación humana</h3><p>La selección se apoya en criterios editoriales y comunidad real, no en una lógica que premie la velocidad por encima de la autenticidad.</p></article><article class="feature-card"><div class="feature-icon">🤝</div><h3>Comunidad viva</h3><p>Un proyecto que aspira a conectar escucha, participación y experiencias musicales en vivo.</p></article></div></div></section>
       <section id="sonido" class="section"><div class="container"><div class="section-heading narrow"><p class="eyebrow">Identidad sonora</p><h2>Sonidos con raíz, personalidad y libertad.</h2></div><div class="tags-wrap" aria-label="Géneros de interés de GrooveCave"><span>Soul</span><span>Funk</span><span>Afrobeat</span><span>Jazz</span><span>Acid Jazz</span><span>Afro Jazz</span><span>Swing</span><span>Reggae</span><span>Rock</span><span>Rock Psicodélico</span><span>Indie Rock</span><span>Indie Pop</span><span>Folk</span><span>Flamenco</span><span>Rumba</span><span>Fusión</span></div><div class="veto-box"><p class="eyebrow eyebrow-dark">Criterio editorial</p><p>GrooveCave prioriza música independiente y orgánica. La selección se basará en criterios musicales publicados y revisables, no en etiquetas automáticas ni en juicios sobre las personas.</p></div></div></section>
       <section id="comunidad" class="section section-dark"><div class="container two-column"><div><p class="eyebrow">De lo digital al directo</p><h2>Una comunidad que escucha, participa y se encuentra en escena.</h2></div><div class="timeline"><div class="timeline-item"><span class="dot"></span><div><h3>La Cueva del Mes</h3><p>Propuesta de votación comunitaria para destacar a un artista independiente; las reglas se definirán antes de activarla.</p></div></div><div class="timeline-item"><span class="dot"></span><div><h3>Circuito de Directos</h3><p>Showcases íntimos en clubes y salas locales, sujetos a la viabilidad y acuerdos con artistas y espacios.</p></div></div><div class="timeline-item"><span class="dot"></span><div><h3>GrooveCave Festival</h3><p>Visión de un evento anual, condicionado a financiación, permisos y capacidad de producción.</p></div></div></div></div></section>
@@ -33,6 +35,25 @@
       </div></section>
     </main>
     <footer class="footer"><div class="container footer-inner"><div class="brand"><span class="brand-mark">🦇</span><span>GrooveCave</span></div><p>Hecho con 🖤 para la música con alma.</p></div></footer>
+    <div class="player" id="player" hidden role="region" aria-label="Reproductor">
+      <div class="player-bar">
+        <button type="button" class="player-now" id="openFull" aria-label="Abrir reproductor ampliado"><span class="cover" id="playerCover" aria-hidden="true">♫</span><span><strong id="playerTitle"></strong><span id="playerArtist"></span></span></button>
+        <div class="player-controls"><button type="button" class="icon-btn" id="prevBtn" aria-label="Anterior">⏮</button><button type="button" class="icon-btn primary" id="playBtn" aria-label="Reproducir">▶</button><button type="button" class="icon-btn" id="nextBtn" aria-label="Siguiente">⏭</button></div>
+        <div class="player-seek"><time id="curTime">0:00</time><input class="seek" id="seek" type="range" min="0" max="0" step="0.1" value="0" aria-label="Progreso" /><time id="durTime">0:00</time></div>
+        <div class="player-extra"><button type="button" class="icon-btn" id="favBtn" aria-label="Favorito" aria-pressed="false">♡</button><input class="seek volume" id="volume" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volumen" /></div>
+      </div>
+    </div>
+    <div class="player-full" id="playerFull" hidden role="dialog" aria-modal="true" aria-label="Ahora suena">
+      <div class="full-inner">
+        <button type="button" class="icon-btn full-close" id="closeFull" aria-label="Cerrar">✕</button>
+        <div class="full-cover" id="fullCover" aria-hidden="true">♫</div>
+        <div><h3 id="fullTitle"></h3><p id="fullArtist"></p></div>
+        <div class="player-seek"><time id="fullCur">0:00</time><input class="seek" id="fullSeek" type="range" min="0" max="0" step="0.1" value="0" aria-label="Progreso" /><time id="fullDur">0:00</time></div>
+        <div class="full-controls"><button type="button" class="icon-btn large" id="fullPrev" aria-label="Anterior">⏮</button><button type="button" class="icon-btn primary large" id="fullPlay" aria-label="Reproducir">▶</button><button type="button" class="icon-btn large" id="fullNext" aria-label="Siguiente">⏭</button><button type="button" class="icon-btn large" id="fullFav" aria-label="Favorito" aria-pressed="false">♡</button></div>
+        <ol class="queue" id="queue" aria-label="Cola de reproducción"></ol>
+      </div>
+    </div>
     <script src="script.js"></script>
+    <script src="player.js"></script>
   </body>
 </html>
