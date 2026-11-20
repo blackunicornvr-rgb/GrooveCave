@@ -6,9 +6,11 @@ La primera versión usa servicios de Cloudflare para mantener el despliegue senc
 
 ```text
 Navegador → Cloudflare Pages (HTML/CSS/JS)
-                    └─ Pages Function: POST /api/waitlist
-                         ├─ Turnstile (verificación anti-spam)
-                         └─ D1 (solicitudes de lista de espera)
+                    └─ Pages Functions /api/*
+                         ├─ Turnstile (registro, envíos IA, sesión de voto)
+                         ├─ D1 (bandas, canciones, concursos, votos, lista de espera)
+                         ├─ R2 groovecave-audio (archivos de audio)
+                         └─ Spotify Web API (opcional: comprobar seguidores)
 ```
 
 La landing es estática; la función valida el formulario en servidor. No hay clave de base de datos expuesta al navegador ni endpoint público para leer solicitudes. La configuración paso a paso está en `web/README.md`.
