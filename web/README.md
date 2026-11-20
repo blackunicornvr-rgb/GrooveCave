@@ -43,7 +43,7 @@ Además de lo anterior, la plataforma completa necesita:
 
 **Binding R2** (Settings → Functions → R2 bucket bindings):
 
-- Variable name: `GROOVECAVE_AUDIO`
+- Variable name: `AUDIO_BUCKET` (también se acepta `GROOVECAVE_AUDIO`)
 - Bucket: `groovecave-audio` (ya creado)
 
 **Secrets** (Settings → Variables and Secrets, tipo *Secret*, en Production y Preview):

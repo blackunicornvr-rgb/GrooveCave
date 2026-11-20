@@ -336,3 +336,11 @@ test("admin: rechazar banda por seguidores revoca su clave", async () => {
   assert.equal((await call(portal.onRequestPost, env, { method: "POST", body: { bandKey: band.bandKey } })).status, 401);
   assert.equal((await call(tracks.onRequestGet, env, {})).data.tracks.length, 0, "sus canciones dejan de ser públicas");
 });
+
+test("acepta el binding R2 con el nombre AUDIO_BUCKET", async () => {
+  const env = makeEnv();
+  env.AUDIO_BUCKET = env.GROOVECAVE_AUDIO;
+  delete env.GROOVECAVE_AUDIO;
+  await approvedBandWithTrack(env, "Banda Bucket", "Folk");
+  assert.equal(env.AUDIO_BUCKET.objects.size, 1);
+});

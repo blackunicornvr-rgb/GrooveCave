@@ -44,7 +44,9 @@ export class HttpError extends Error {
 export const handle = (fn) => async (context) => {
   try {
     if (!context.env.GROOVECAVE_DB) throw new HttpError(503, "La base de datos no está configurada todavía.");
-    return await fn(context);
+    // El proyecto de Pages enlaza el bucket como AUDIO_BUCKET; se acepta también GROOVECAVE_AUDIO.
+    const audioBucket = context.env.GROOVECAVE_AUDIO || context.env.AUDIO_BUCKET;
+    return await fn({ ...context, env: { ...context.env, GROOVECAVE_AUDIO: audioBucket } });
   } catch (error) {
     if (error instanceof HttpError) return json({ error: error.message }, error.status);
     console.error("groovecave function failed", error);
