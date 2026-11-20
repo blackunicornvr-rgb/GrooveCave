@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Portal de banda | GrooveCave</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="contest.css" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <header class="topbar"><div class="container nav"><a class="brand" href="index.html"><span class="brand-mark">🦇</span><span>GrooveCave</span></a><a class="button button-small button-dark" href="index.html#bandas">Volver</a></div></header>
+    <main class="portal"><div class="container">
+      <p class="eyebrow">Portal de banda</p>
+      <h1>Tu espacio en GrooveCave</h1>
+      <section class="portal-panel" id="loginPanel">
+        <h2>Entra con tu clave de banda</h2>
+        <p>Te la enviamos al aprobar tu banda. Se guarda solo en esta pestaña.</p>
+        <form id="bandLogin" class="portal-actions"><input type="password" name="bandKey" autocomplete="off" placeholder="gc_…" required minlength="20" aria-label="Clave de banda" /><button class="button button-primary" type="submit">Entrar</button></form>
+        <p class="form-message" id="loginMessage" aria-live="polite"></p>
+      </section>
+      <div id="bandArea" hidden>
+        <section class="portal-panel"><h2 id="bandName"></h2><p id="bandMeta"></p><button class="button button-small button-dark" type="button" id="logout">Salir</button></section>
+        <div class="portal-grid">
+          <section class="portal-panel"><h2>Sube una canción</h2>
+            <form id="trackUpload" class="waitlist-form" enctype="multipart/form-data"><label>Título<input type="text" name="title" maxlength="120" required /></label><label>Género<select name="genre" data-genres required></select></label><label>Archivo de audio (máx. 25 MB)<input type="file" name="file" accept="audio/*" required /></label><label class="consent"><input type="checkbox" name="rights" required />Confirmo que la banda tiene todos los derechos de esta grabación y autoriza su reproducción en GrooveCave.</label><button class="button button-primary full-width" type="submit">Subir canción</button><p class="form-message" id="uploadMessage" aria-live="polite"></p></form>
+          </section>
+          <section class="portal-panel"><h2>Tus canciones</h2><ul class="portal-list" id="trackList"></ul></section>
+        </div>
+        <section class="portal-panel"><h2>Banda del Mes</h2><p>Inscribe una de tus canciones publicadas en un concurso abierto.</p><ul class="portal-list" id="bandMonthList"></ul></section>
+        <section class="portal-panel"><h2>Tocar en directo una canción IA ganadora</h2><p>Ofreceos para interpretar en concierto la canción ganadora de un concurso IA. El equipo elegirá una banda por canción.</p><ul class="portal-list" id="aiWinnerList"></ul></section>
+      </div>
+    </div></main>
+    <script src="arena-core.js"></script>
+    <script src="portal.js"></script>
+  </body>
+</html>

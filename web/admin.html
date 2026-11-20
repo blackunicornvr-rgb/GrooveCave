@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Administración | GrooveCave</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="contest.css" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <header class="topbar"><div class="container nav"><a class="brand" href="index.html"><span class="brand-mark">🦇</span><span>GrooveCave · Admin</span></a><button class="button button-small button-dark" type="button" id="adminLogout" hidden>Salir</button></div></header>
+    <main class="portal"><div class="container">
+      <h1>Panel de administración</h1>
+      <section class="portal-panel" id="adminLogin">
+        <h2>Token de administración</h2>
+        <p>Es el secret <code>ADMIN_TOKEN</code> configurado en Cloudflare Pages. Se guarda solo en esta pestaña.</p>
+        <form class="portal-actions" id="adminLoginForm"><input type="password" name="token" autocomplete="off" required minlength="24" aria-label="Token" /><button class="button button-primary" type="submit">Entrar</button></form>
+        <p class="form-message" id="adminLoginMessage" aria-live="polite"></p>
+      </section>
+      <div id="adminArea" hidden>
+        <p class="form-message" id="adminMessage" aria-live="polite"></p>
+        <div id="newKey" hidden class="portal-panel"><h2>Clave de banda generada</h2><p>Cópiala y envíasela a la banda por email. No se volverá a mostrar.</p><p id="newKeyFor"></p><div class="key-box" id="newKeyValue"></div></div>
+        <section class="portal-panel"><h2>Bandas pendientes</h2><ul class="portal-list" id="pendingBands"></ul></section>
+        <section class="portal-panel"><h2>Canciones pendientes</h2><ul class="portal-list" id="pendingTracks"></ul></section>
+        <section class="portal-panel"><h2>Canciones IA pendientes</h2><ul class="portal-list" id="pendingAi"></ul></section>
+        <section class="portal-panel"><h2>Bandas que quieren tocar una canción IA ganadora</h2><ul class="portal-list" id="applications"></ul></section>
+        <section class="portal-panel"><h2>Crear concurso</h2>
+          <form class="waitlist-form" id="contestForm"><label>Tipo<select name="type" required><option value="band_month">Banda del Mes</option><option value="ai_song">Canción IA por género</option></select></label><label>Título<input name="title" maxlength="120" required placeholder="Banda del Mes · Enero 2027" /></label><label>Género (obligatorio para concursos IA)<select name="genre" data-genres><option value="">—</option></select></label><label>Descripción / bases<textarea name="description" rows="3" maxlength="2000"></textarea></label><label>Apertura de votaciones (tu hora local)<input type="datetime-local" name="opensAt" required /></label><label>Cierre (tu hora local)<input type="datetime-local" name="closesAt" required /></label><button class="button button-primary full-width" type="submit">Crear concurso</button></form>
+        </section>
+        <section class="portal-panel"><h2>Concursos</h2><ul class="portal-list" id="contestList"></ul></section>
+        <section class="portal-panel"><h2>Lista de espera</h2><ul class="portal-list" id="waitlist"></ul></section>
+      </div>
+    </div></main>
+    <script src="arena-core.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>

@@ -142,7 +142,7 @@
       artist.textContent = track.artist;
       const duration = document.createElement("span");
       duration.className = "dur";
-      duration.textContent = fmt(track.seconds);
+      duration.textContent = track.seconds ? fmt(track.seconds) : track.genre || "";
       info.append(title, artist, duration);
       const play = document.createElement("button");
       play.type = "button";
@@ -163,7 +163,7 @@
       const title = document.createElement("span");
       const duration = document.createElement("span");
       title.textContent = track.title;
-      duration.textContent = fmt(track.seconds);
+      duration.textContent = track.seconds ? fmt(track.seconds) : track.artist;
       button.append(title, duration);
       button.addEventListener("click", () => load(trackIndex, true));
       item.append(button);
@@ -454,6 +454,28 @@
   renderCards();
   renderQueue();
   syncModes();
-  const savedIndex = TRACKS.findIndex((track) => track.id === saved.trackId);
-  if (savedIndex >= 0) load(savedIndex, false, { restore: true });
+  const restoreSaved = () => {
+    const savedIndex = TRACKS.findIndex((track) => track.id === saved.trackId);
+    if (savedIndex >= 0 && index < 0) load(savedIndex, false, { restore: true });
+  };
+
+  // Catálogo real: canciones aprobadas de bandas emergentes. Si aún no hay, se mantienen las pistas demo.
+  const palette = ["#d9b26d", "#e0875b", "#8fb8a8", "#b9a0d6", "#d97b8f", "#7fa7d9", "#c9c26b"];
+  const colorFor = (text) => palette[[...text].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % palette.length];
+  fetch("/api/tracks", { headers: { Accept: "application/json" } })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((data) => {
+      const real = Array.isArray(data?.tracks) ? data.tracks : [];
+      if (!real.length || index >= 0) return;
+      TRACKS.splice(0, TRACKS.length, ...real.map((track) => ({
+        id: `api-${track.id}`, title: track.title, artist: track.band, genre: track.genre,
+        color: colorFor(track.genre || track.band), src: track.audioUrl, seconds: 0
+      })));
+      const note = document.querySelector("#catalogo .demo-note");
+      if (note) note.textContent = "Música de bandas emergentes con menos de 100.000 seguidores, revisada por el equipo de GrooveCave.";
+      renderCards();
+      renderQueue();
+    })
+    .catch(() => {})
+    .finally(restoreSaved);
 })();

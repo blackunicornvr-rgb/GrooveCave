@@ -1,5 +1,11 @@
 # GrooveCave: Cloudflare-first
 
-La landing está en `web/` y se despliega en Cloudflare Pages. La lista de espera usa Pages Functions, Cloudflare D1 y Turnstile. Supabase no es necesario para este MVP.
+Plataforma de música para **bandas emergentes con menos de 100.000 seguidores**: catálogo y reproductor, concurso mensual **Banda del Mes** y **concurso de canciones hechas con IA** por género cuya ganadora toca en directo una banda de la plataforma.
 
-Lee [la guía de despliegue](web/README.md) para crear y vincular la base de datos y configurar las claves de Turnstile.
+Todo funciona sobre Cloudflare: Pages (web en `web/`), Pages Functions (API en `web/functions/api/`), D1 (datos), R2 (audio) y Turnstile (anti-spam).
+
+- `/` — web pública: catálogo, Banda del Mes, concurso IA, registro de bandas y lista de espera
+- `/banda.html` — portal privado de cada banda
+- `/admin.html` — panel de moderación y concursos
+
+Lee [la guía de despliegue](web/README.md) para configurar bindings y secrets, y `npm test` para ejecutar las pruebas.

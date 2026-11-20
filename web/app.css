@@ -1,0 +1,79 @@
+/* Componentes de la plataforma: concursos reales, concurso IA, bandas y portales. */
+.inline-link{color:#b07a1f;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.section-dark .inline-link,.section:not(.section-light) .inline-link{color:var(--gold-light)}
+.contest-root{display:grid;gap:16px}
+.contest-picker{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.contest-picker-label{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-weight:700}
+.contest-picker select{min-height:42px;max-width:100%;padding:8px 12px;border-radius:10px;border:1px solid #171b1f28;background:#fff;color:#171b1f}
+.contest-title{margin:0 0 4px;font-size:1.25rem}
+.contest-desc{margin-top:6px}
+.contest-view{display:grid;gap:16px}
+.voter-gate{padding:16px;border:1px dashed #b07a1f80;border-radius:14px;background:#fff8e8}
+.voter-gate p{margin:0 0 10px}
+.entry-audio{width:100%;margin:6px 0 10px;height:36px}
+.arena-style-card.is-winner{outline:2px solid #d9b26d;box-shadow:0 0 0 4px #d9b26d33}
+.arena-rating button[aria-pressed="true"]{font-weight:800}
+.winner-big{font-size:1.1rem;font-weight:700}
+.performance-card{display:grid;gap:4px;margin-top:12px;padding:14px;border-radius:12px;background:#d9b26d1f;border:1px solid #d9b26d66}
+.performance-card a{color:inherit;font-weight:700;text-decoration:underline}
+
+/* Variante oscura para el concurso IA */
+.contest-dark .contest-picker select{background:#11151a;color:var(--text);border-color:#ffffff24}
+.contest-dark .arena-meta{border-color:var(--line);background:#ffffff08}
+.contest-dark .arena-meta p,.contest-dark .arena-note,.contest-dark .arena-empty{color:var(--muted)}
+.contest-dark .arena-style,.contest-dark .arena-global{background:#ffffff08;border-color:var(--line);color:var(--text)}
+.contest-dark .arena-style-card{background:#11151a;border-color:var(--line);color:var(--text)}
+.contest-dark .arena-style-card .meta,.contest-dark .votes{color:var(--muted)}
+.contest-dark .arena-rating button,.contest-dark .skip{background:#1b2128;color:var(--text);border-color:#ffffff2a}
+.contest-dark .arena-rating button.is-active{background:var(--gold);color:#17130d}
+.contest-dark .voter-gate{background:#d9b26d12;border-color:#d9b26d66}
+.contest-dark .winner-row{border-color:var(--line)}
+.ai-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;list-style:none;padding:0;margin:0 0 24px}
+.ai-steps li{display:grid;gap:4px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#ffffff06}
+.ai-steps span{color:var(--muted);font-size:.92rem}
+.ai-submit{margin-top:28px;max-width:640px}
+.ai-submit h3{margin:0 0 12px}
+
+/* Bandas */
+.band-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:48px}
+.band-card{padding:18px;border:1px solid var(--line);border-radius:16px;background:#ffffff06}
+.band-card h3{margin:0 0 4px}
+.band-card .meta,.band-followers{margin:0;color:var(--muted);font-size:.88rem}
+.band-bio{font-size:.92rem}
+.band-links{display:flex;gap:12px;margin-top:8px}
+.band-links a{color:var(--gold-light);font-weight:700}
+.band-signup{margin-top:24px}
+.catalog-search select{display:block;margin-top:6px;min-height:42px;padding:8px 12px;border-radius:10px;border:1px solid #ffffff24;background:#11151a;color:var(--text)}
+.waitlist-form input[type="file"]{padding:10px}
+.honeypot{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
+
+/* Portales (banda y administración) */
+.portal{min-height:100vh;padding:48px 0 96px}
+.portal h1{margin:0 0 8px;font-size:clamp(2rem,4vw,3rem);letter-spacing:-.04em}
+.portal-panel{margin-top:24px;padding:22px;border:1px solid var(--line);border-radius:18px;background:#ffffff06}
+.portal-panel h2{margin:0 0 12px;font-size:1.3rem}
+.portal-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.portal-item{display:grid;gap:6px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#11151a}
+.portal-item header{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:baseline}
+.portal-item p{margin:0;color:var(--muted);font-size:.9rem}
+.portal-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.portal-actions input,.portal-actions select{min-height:38px;padding:6px 10px;border-radius:10px;border:1px solid #ffffff24;background:#0b0d10;color:var(--text)}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.78rem;font-weight:700;background:#ffffff14}
+.pill.approved{background:#3f8f5a33;color:#9fe0b4}
+.pill.pending{background:#d9b26d33;color:var(--gold-light)}
+.pill.rejected{background:#c0505033;color:#f0a0a0}
+.key-box{padding:12px;border-radius:10px;background:#0b0d10;border:1px solid var(--gold);font-family:ui-monospace,monospace;word-break:break-all}
+.portal .form-message{min-height:1.4em}
+.portal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+@media (max-width:760px){.menu{overflow-x:auto;max-width:60vw;gap:16px;white-space:nowrap}}
+
+/* Ajustes de legibilidad y móvil */
+.arena-rating button,.skip{color:#171b1f}
+.contest-root,.contest-view,.contest-root>*{min-width:0}
+.contest-picker select{width:100%;text-overflow:ellipsis}
+.contest-picker-label{width:100%}
+.arena-meta>div{min-width:0;flex:1 1 240px}
+.arena-styles{grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr))}
+.arena-style-card{min-width:0;overflow:hidden}
+.waitlist-form label.consent{display:flex;gap:10px;align-items:flex-start}
+.waitlist-form label.consent input{display:inline-block;width:auto;flex:none;margin:4px 0 0}
